@@ -19,7 +19,12 @@ library(EBImage)
 
 plt_img <- function(x){ image(x, col=grey(seq(0, 1, length=256)))}
 
-## REPLICATION
+##########################################################################################################
+############################################ REPLICATION #################################################
+##########################################################################################################
+
+# Note: For the replication part, we largely follow Hou, Janpu (2019), "A Simple Image Classifier with Eigenfaces 
+# Link: https://rpubs.com/JanpuHou/469414
 
 ###################################
 ## Part I: Constructing the dataset
@@ -107,6 +112,10 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
   }
   
   df=as.data.frame(newdata)
+
+  
+#########################################
+## Part III: Average faces and eigenfaces
   
   par(mfrow=c(2,2))
   par(mar=c(0.1,0.1,0.1,0.1))
@@ -125,7 +134,7 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
 
   D <- data.matrix(df)
   
-  ## Let's look at the average face, and need to be substracted from all image data
+  ## Let's look at the average face, and need to be subtracted from all image data
   average_face=colMeans(df)
   AVF=matrix(average_face,nrow=1,byrow=F)
   plt_img(matrix(average_face,nrow=64,byrow=F))
@@ -161,9 +170,12 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
   # First 40 eigenvalues dominate
   plot(1:40, y, type="o", log = "y", main="Magnitude of the 40 biggest eigenvalues", xlab="Eigenvalue #", ylab="Magnitude")
   
-  sum(eigenvalues)/sum(eigen(A)$values) #the 40 largest eigenvalues account for approximately 85% of the total variance in the dataset
+  #sum(eigenvalues)/sum(eigen(A)$values) #the 40 largest eigenvalues account for approximately __ of the total variance in the dataset
   
   D_new <- D %*% eigenvectors #Principal components (AKA scores)
+  
+#################################
+## Part IV: Plotting, projecting and reconstructing faces
   
   #Plot the first 6 eigenfaces
   
@@ -245,9 +257,15 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
   RE1AVF=RE1+AVF
   plt_img(matrix(as.numeric(RE1AVF),nrow=64,byrow=F))
   
+  
+##########################################
+## Part V: Classifying and matching
+  
   #Classify images based on Euclidean distance
   
-  PF1 <- data.matrix(df[122,]) %*% eigenvectors #test the 122nd photo
+  PF1 <- data.matrix(df[22,]) %*% eigenvectors #test the 22nd photo, which should be the third person on our list - Anne Hathaway
+  
+  # Note: For testing different photos, just change number in the brackets above
   
   PFall <- data.matrix(df) %*% eigenvectors #transform photos in the dataset onto eigen space and get their coefficients
   
@@ -271,9 +289,10 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
   
   cat("the minimum number occurs at row = ", the_number) #result
   
-  plt_img(matrix(as.numeric(df[the_number, ]), nrow=64, byrow=F)) #result
+  plt_img(matrix(as.numeric(df[the_number, ]), nrow=64, byrow=F)) #result - It is Anne Hathaway!
   
-  cat("The photo matches the number #",the_number,"photo in the files") #result
+  cat("The photo matches the number #",the_number,"photo in the files") # Correctly identifies the 22nd photo out of the 128 photos, 
+                                                  #by finding the match with the highest similarity score / lowest diff (0 in the plot)
 
 
 
