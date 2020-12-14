@@ -1,5 +1,15 @@
 setwd("C:/Users/IPAUser/Desktop/R Project/")
 
+#devtools::install_github("rstudio/reticulate")
+#install.packages('keras', type = "source") # Install the package from CRAN. 
+# Note that this requires Rtools to be already installed
+library(keras)
+install_keras() #to setup the Keras library and TensorFlow backend
+#if (!requireNamespace('BiocManager', quietly = TRUE))
+#install.packages('BiocManager')
+#BiocManager::install('EBImage')
+library(EBImage)
+
 #install.packages("dplyr") #download necessary package.
 #install.packages("RSpectra") #download necessary package for Principal Components Analysis.
 #install.packages('magick')
@@ -9,18 +19,10 @@ library(magick)
 library(dplyr)
 library(here)
 
-#install.packages('keras') # Install the package from CRAN
-#library(keras)
-#install_keras() #to setup the Keras library and TensorFlow backend
-#if (!requireNamespace('BiocManager', quietly = TRUE))
-  #install.packages('BiocManager')
-#BiocManager::install('EBImage')
-library(EBImage)
-
 plt_img <- function(x){ image(x, col=grey(seq(0, 1, length=256)))}
 
 ##########################################################################################################
-############################################ REPLICATION #################################################
+########################### REPLICATION: IMAGE CLASSIFIER WITH NEW DATASET ###############################
 ##########################################################################################################
 
 # Note: For the replication part, we largely follow Hou, Janpu (2019), "A Simple Image Classifier with Eigenfaces 
@@ -35,7 +37,7 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
           'Matt Damon', 'Will Smith', 'Denzel Washington') ## To add male subjects, just add name here and re-run code
 
   for (namef in female) {
-    setwd(here::here(name))
+    setwd(here::here(namef))
     img.card <- sample(dir())
     cards <- list(NULL)
     for(i in 1:length(img.card))
@@ -43,11 +45,11 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
       cards[[i]]<- readImage(img.card[i])
       cards[[i]]<- resize(cards[[i]], 64, 64)
     }
-    assign(name, cards)
+    assign(namef, cards)
   }
 
-  for (name in male) {
-    setwd(here::here(name))
+  for (namem in male) {
+    setwd(here::here(namem))
     img.card <- sample(dir())
     cards <- list(NULL)
     for(i in 1:length(img.card))
@@ -55,7 +57,7 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
       cards[[i]]<- readImage(img.card[i])
       cards[[i]]<- resize(cards[[i]], 64, 64)
     }
-    assign(name, cards)
+    assign(namem, cards)
   }
   rm(cards)
 
@@ -294,7 +296,89 @@ male <- c('Ben Affleck', 'Daniel Craig', 'Christian Bale', 'Dwayne Johnson', 'Ke
   cat("The photo matches the number #",the_number,"photo in the files") # Correctly identifies the 22nd photo out of the 128 photos, 
                                                   #by finding the match with the highest similarity score / lowest diff (0 in the plot)
 
+  
+##########################################################################################################
+########################### EXTENSION: IMAGE CLASSIFIER AND PREDICTOR ####################################
+##########################################################################################################
 
+# This syntax takes the following 'Towards Data Science' article as reference: 'A Layman's Guide to Building Your First Image Classification Model in R Using Keras'
+# Link: https://towardsdatascience.com/a-laymans-guide-to-building-your-first-image-classification-model-in-r-using-keras-b285deac6572
 
-
-
+  train2 <- aperm(EBImage::combine(train_pool)) %>% as.matrix.data.frame()
+  test2 <- aperm(EBImage::combine(test_pool)) %>% as.matrix.data.frame()
+  
+  par(mfrow=c(4,5)) # To contain all images in single frame
+  for(i in 1:20){
+    plot(test_pool[[i]])
+  }
+  par(mfrow=c(1,1)) # Reset the default
+  
+  #one hot encoding
+  train_y<-c(rep(0,8),rep(1,8),rep(2,8),rep(3,8), rep(4,8),
+             rep(5,8),rep(6,8),rep(7,8),rep(8,8))
+  test_y<-c(rep(0,2),rep(1,2),rep(2,2))
+  train_lab <- to_categorical(train_y) #Categorical vector for training 
+  #classes
+  test_lab <- to_categorical(test_y) #Categorical vector for test classes
+  
+  # Model Building
+  model.card <- keras_model_sequential() #-Keras Model composed of a linear stack of layers
+  model.card %>%                   #---------Initiate and connect to 
+  #----------------------------(A)-----------------------------------#
+  layer_conv_2d(filters = 40,       #----------First convoluted layer
+                kernel_size = c(4,4),             #---40 Filters with dimension 4x4
+                activation = 'relu',              #-with a ReLu activation function
+                input_shape = c(64,64,4)) %>%   
+  #----------------------------(B)-----------------------------------#
+  layer_conv_2d(filters = 40,       #---------Second convoluted layer
+                  kernel_size = c(4,4),             #---40 Filters with dimension 4x4
+                  activation = 'relu') %>%          #-with a ReLu activation function
+  #---------------------------(C)-----------------------------------#
+  layer_max_pooling_2d(pool_size = c(4,4) )%>%   #--------Max Pooling
+  #-----------------------------------------------------------------#
+  layer_dropout(rate = 0.25) %>%   #-------------------Drop out layer
+  #----------------------------(D)-----------------------------------#
+  layer_conv_2d(filters = 80,      #-----------Third convoluted layer
+                  kernel_size = c(4,4),            #----80 Filters with dimension 4x4
+                  activation = 'relu') %>%         #--with a ReLu activation function
+  #-----------------------------(E)----------------------------------#
+  layer_conv_2d(filters = 80,      #----------Fourth convoluted layer
+                  kernel_size = c(4,4),            #----80 Filters with dimension 4x4
+                  activation = 'relu') %>%         #--with a ReLu activation function
+  #-----------------------------(F)----------------------------------#
+  layer_max_pooling_2d(pool_size = c(4,4)) %>%  #---------Max Pooling
+  #-----------------------------------------------------------------#
+  layer_dropout(rate = 0.35) %>%   #-------------------Drop out layer
+  #------------------------------(G)---------------------------------#
+  layer_flatten()%>%   #---Flattening the final stack of feature maps
+  #------------------------------(H)---------------------------------#
+  layer_dense(units = 256, activation = 'relu')%>% #-----Hidden layer
+  #---------------------------(I)-----------------------------------#
+  layer_dropout(rate= 0.25)%>%     #-------------------Drop-out layer
+  #-----------------------------------------------------------------#
+  layer_dense(units = 4, activation = 'softmax')%>% #-----Final Layer
+  #----------------------------(J)-----------------------------------#
+  compile(loss = 'categorical_crossentropy',
+          optimizer = optimizer_adam(),
+          metrics = c("accuracy"))   # Compiling the architecture
+  
+  summary(model.card)
+  
+  #fit model
+  history<- model.card %>% fit(train2, 
+                              train_lab, 
+                              epochs = 10,
+                              batch_size = 8,
+                              validation_split = 0.2)
+  
+  #Model Evaluation
+  model.card %>% evaluate(train2,train_lab) #Evaluation of training set 
+  pred<- model.card %>% predict_classes(train2) #-----Classification
+  Train_Result<-table(Predicted = pred, Actual = train_y) #----Results
+  model.card %>% evaluate(test2, test_lab) #-----Evaluation of test set
+  pred1<- model.card  %>% predict_classes(test2)   #-----Classification
+  Test_Result<-table(Predicted = pred1, Actual = test_y) #-----Results
+  rownames(Train_Result) <- rownames(Test_Result) <- colnames(Train_Result) <- colnames(Test_Result) <- celebs
+  print(Train_Result)
+  print(Test_Result)
+  
