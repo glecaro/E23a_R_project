@@ -1,6 +1,8 @@
-This is the ReadMe file for the Harvard Extension School Math E23a Linear Algebra and Real Analysis R project.
+## Math E23a R Project: Simple Image Classifier using Eigenfaces and Principal Component Analysis
 
- Video Narration: \hyperlink{http://bit.ly/PintoLecaroRProject}{http://bit.ly/PintoLecaroRProject}
+#This is the ReadMe file for the Harvard Extension School Math E23a Linear Algebra and Real Analysis R project.
+
+Video Narration: \hyperlink{http://bit.ly/PintoLecaroRProject}{http://bit.ly/PintoLecaroRProject}
 GitHub Repository: \hyperlink{https://github.com/glecaro/E23a_R_project}{https://github.com/glecaro/E23a\_R\_project}
 
 Instructions to run the script:
@@ -13,15 +15,15 @@ Instructions to run the script:
 
 Outline of which points we believe we have earned:
 
-1.1 The topic is related to linear algebra, real analysis, or multivariate calculus:\newline
+1.1 The topic is related to linear algebra, real analysis, or multivariate calculus:
 - Our topic is intrinsically related to linear algebra as it is largely based and dependent on eigenvectors.
 
 
-1.2 The script is commented well enough to be reasonably self-explanatory:\newline
+1.2 The script is commented well enough to be reasonably self-explanatory:
 - We have included cohesive comments throughout the script to explain it.
 
 
-1.3 The script generates at least one nice-looking graphic:\newline
+1.3 The script generates at least one nice-looking graphic:
 - Our script generates nice-looking graphics on almost all parts of the script through the plt\_image function
 
 
@@ -37,7 +39,7 @@ Outline of which points we believe we have earned:
 - The R functions that we used and that have not appeared in any Math 23 lecture script can be found in the set up section and throughout the script.
 
 
-2.3 Uses a random-number function and a for loop:\newline
+2.3 Uses a random-number function and a for loop:
 - We used random sampling without replacement in the first part, and nested for loops throughout the script.
 
 
@@ -49,11 +51,11 @@ Outline of which points we believe we have earned:
 - We have created streamlined functions (that perform multiple, consecutive steps) by using magrittr (tidyverse package) operators and pipes and create a function to plot images in lines, all throughout the script.
 
 
-2.6 Uses a permutation test, bootstrap, or other similar statistical technique:\newline
+2.6 Uses a permutation test, bootstrap, or other similar statistical technique:
 - We have used sample function for sampling without replacement and an array transposition function to permute the matrix dimensions to be able to exploit our small sample size in parts 1 and 3.
 
 
-2.7 Includes two related but distinct topics:\newline
+2.7 Includes two related but distinct topics:
 - This project performs Principal Component Analysis which is a dimensionality-reduction technique widely used in Data Science and Statistics, and based on eigen-decomposition for multivariate analysis in Part 3. We also use resampling and covariance matrices, which are topics from Statistics.
 
 
@@ -61,7 +63,7 @@ Outline of which points we believe we have earned:
 - Some of the new new library/R package we delved into in this project include RSpectra, magick, and EBImage.
 
 
-2.9 Professional-looking software engineering:\newline
+2.9 Professional-looking software engineering:
 - We have included commentary throughout the code and used the R package Magrittr, which allows us to favor more intuitive, readable syntax.
 
 
