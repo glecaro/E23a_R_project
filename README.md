@@ -1,7 +1,7 @@
-# Math E23a R Project: Simple Image Classifier using Eigenfaces and Principal Component Analysis
-## Authors: Lecaro, Gabriela; Pinto, Carlos Eduardo
+## Math E23a R Project: Simple Image Classifier using Eigenfaces and Principal Component Analysis
+### Authors: Lecaro, Gabriela; Pinto, Carlos Eduardo
 
-### This is the ReadMe file for the Harvard Extension School Math E23a Linear Algebra and Real Analysis R project.
+#### This is the ReadMe file for the Harvard Extension School Math E23a Linear Algebra and Real Analysis R project.
 
 Video Narration: http://bit.ly/PintoLecaroRProject}{http://bit.ly/PintoLecaroRProject
 
